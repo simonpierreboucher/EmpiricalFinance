@@ -57,10 +57,3 @@ estimate_garch <- function(series, p, q, start_params) {
   return(result)
 }
 
-# Exemple d'utilisation
-set.seed(123)
-garch_series <- generate_garch(1000, omega = 0.1, alpha = c(0.1, 0.2), beta = c(0.3))
-start_params <- c(0.1, rep(0.1, 2), rep(0.1, 1))
-garch_estimation <- estimate_garch(garch_series, p = 2, q = 1, start_params = start_params)
-
-print(garch_estimation)
