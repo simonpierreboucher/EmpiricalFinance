@@ -13,6 +13,10 @@ estimate_garch <- function(series, p, q, start_params) {
     alpha <- params[2:(p + 1)]
     beta <- params[(p + 2):(p + q + 1)]
     
+    if (omega <= 0 || any(alpha < 0) || any(beta < 0) || sum(alpha + beta) >= 1) {
+      return(Inf)
+    }
+    
     n <- length(series)
     innovations <- series - mean(series)
     conditional_variances <- rep(var(innovations), n)
@@ -46,8 +50,17 @@ estimate_garch <- function(series, p, q, start_params) {
     std_errors = std_errors,
     p_values = p_values,
     log_likelihood = -opt_result$value,
-    convergence = opt_result$convergence
+    convergence = opt_result$convergence,
+    stationarity = sum(estimates[2:(p + 1)] + estimates[(p + 2):(p + q + 1)]) < 1
   )
   
   return(result)
 }
+
+# Exemple d'utilisation
+set.seed(123)
+garch_series <- generate_garch(1000, omega = 0.1, alpha = c(0.1, 0.2), beta = c(0.3))
+start_params <- c(0.1, rep(0.1, 2), rep(0.1, 1))
+garch_estimation <- estimate_garch(garch_series, p = 2, q = 1, start_params = start_params)
+
+print(garch_estimation)
